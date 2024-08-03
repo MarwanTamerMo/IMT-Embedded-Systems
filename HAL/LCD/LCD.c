@@ -152,3 +152,45 @@ static void WriteHelper(uint8 u8StartPin, uint8 u8lcdIndxCpy, uint8 u8DataorCmdC
 			DIO_enumWritePin(LCD_astrConfigSet[u8lcdIndxCpy].strLcdExtCnfg.En, 0);
 			_delay_ms(1);
 }
+
+void LCD_vidWriteString(uint8 u8LcdIndxCpy,char* charSTring )
+{
+	uint8 u8cntr=0;
+	while (charSTring[u8cntr]!='\0')
+	{
+		LCD_vidWriteData(u8LcdIndxCpy,charSTring[u8cntr]);
+		u8cntr++;
+	}
+}
+
+
+void LCD_vidWriteNumber(uint8 u8LCDIndx, uint32 u32NumberCpy)
+{
+	uint8 u8CntrLoc = 0, au8ModArray[15];
+	int8_t u8IteratorLoc;
+	uint32 u32ResultLoc, u32NumberHolderLoc = u32NumberCpy;
+
+	// Handle the case when the number is zero
+	if (u32NumberCpy == 0)
+	{
+		LCD_vidWriteData(u8LCDIndx, '0');
+		return;
+	}
+
+	while (u32NumberHolderLoc != 0)
+	{
+		u32ResultLoc = u32NumberHolderLoc % 10;
+		au8ModArray[u8CntrLoc] = u32ResultLoc;
+		u32NumberHolderLoc = u32NumberHolderLoc / 10;
+
+		u8CntrLoc++;
+	}
+
+	for(u8IteratorLoc = u8CntrLoc - 1; u8IteratorLoc >= 0; u8IteratorLoc--)
+	{
+		/*48 is added cuz it's the starting address of the ASCII Numbers 0--9*/
+		LCD_vidWriteData(u8LCDIndx, (au8ModArray[u8IteratorLoc] + 48));
+
+	}
+}
+
